@@ -1,0 +1,28 @@
+{
+  "name": "haako",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "packageManager": "npm@10.9.2",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "web:dev": "turbo run dev --filter=web",
+    "web:build": "turbo run build --filter=web",
+    "web:start": "turbo run start --filter=web",
+    "web:lint": "turbo run lint --filter=web",
+    "web:test": "turbo run test --filter=web",
+    "mobile:dev": "turbo run dev --filter=mobile",
+    "mobile:build": "turbo run build --filter=mobile",
+    "mobile:start": "turbo run start --filter=mobile",
+    "mobile:lint": "turbo run lint --filter=mobile",
+    "mobile:test": "turbo run test --filter=mobile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "turbo": "^2.5.3"
+  }
+}
