@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
+import { withExpo } from "@expo/next-adapter";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: [
+    'react-native',
+    'expo',
+  ],
 };
 
-export default nextConfig;
+export default withExpo(nextConfig);
