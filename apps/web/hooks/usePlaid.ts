@@ -28,8 +28,7 @@ export function usePlaid() {
         queryFn: async () => {
             // Call the mutation function to fetch the token
             const stringifiedData = await fetchLinkToken(user!);
-            const parsedData = JSON.parse(stringifiedData);
-            return parsedData.linkToken as string;
+            return stringifiedData.linkToken as string;
         },
         enabled: !!user?.$id, // Only run the query if user and user.$id exist
         staleTime: Infinity, // Token usually doesn't change for a session

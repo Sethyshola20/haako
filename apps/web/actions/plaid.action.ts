@@ -17,7 +17,7 @@ export async function createLinkToken (user:User){
             },
             client_name: user.firstName + ' ' + user.lastName,
             products: ['auth'] as Products[],
-            country_codes: ['US'] as CountryCode[],
+            country_codes: ['US','FR'] as CountryCode[],
             language: 'en'  ,
         }
        const response= await plaidClient.linkTokenCreate(tokenParams)
@@ -57,14 +57,19 @@ export const exchangePublicToken = async ({
     const processorTokenResponse =
       await plaidClient.processorTokenCreate(request);
     const processorToken = processorTokenResponse.data.processor_token;
-
+    
     // Create a funding source URL for the account using the Dwolla customer ID, processor token, and bank name
     const fundingSourceUrl = await addFundingSource({
       dwollaCustomerId:user.dwollaCustomerId,
       processorToken,
       bankName: accountData.name,
     });
-
+    console.log("fundingSourceUrl",fundingSourceUrl)
+    console.log("user",user)
+    console.log("accountData",accountData)
+    console.log("itemId",itemId)
+    console.log("processorToken",processorToken)
+    console.log("accessToken",accessToken)
     // If the funding source URL is not created, throw an error
     if (!fundingSourceUrl) throw Error;
 
@@ -79,7 +84,7 @@ export const exchangePublicToken = async ({
     });
 
     // Revalidate the path to reflect the changes
-    revalidatePath("/");
+    revalidatePath("/dashboard");
 
     // Return a success message
     return parseStringify({

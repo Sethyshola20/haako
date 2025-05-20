@@ -10,6 +10,7 @@ import { Button } from '../../../../components/ui/button';
 import { useRouter } from 'next/navigation';
 import { usePlaid } from '@/hooks/usePlaid';
 import { exchangePublicToken } from '@/actions/plaid.action';
+import { Loader2 } from 'lucide-react';
 
 export default function PlaidLink({user}:{user: User}) {
   const router = useRouter()
@@ -20,17 +21,17 @@ export default function PlaidLink({user}:{user: User}) {
     router.push('/dashboard')
   },[user])
   
-    const config: PlaidLinkOptions = {
-        onSuccess,
-        //onExit: (err, metadata) => {console.log(err, metadata)},
-        //onEvent: (eventName, metadata) => {console.log(eventName, metadata)},
-        token: token as string,
-      };
+  const config: PlaidLinkOptions = {
+      onSuccess,
+      token: token as string,
+    };
     //fetch token with reactquery
-    const {open, ready} = usePlaidLink(config)
-    
-
-
+  const {open, ready} = usePlaidLink(config)
+  if(isLoading){
+    return <Button variant={"ghost"} size="icon"><Loader2/></Button>
+  }else if(error){
+    return <div>Error: {error.message}</div>
+  }
   return (
     <Button variant="default" disabled={!ready} onClick={()=>open()} className='w-full cursor-pointer' type='button'>
       Link your bank account

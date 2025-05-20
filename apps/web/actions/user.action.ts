@@ -13,9 +13,7 @@ export async function getLoggedInUserAction() {
     try {
         const { account } = await createSessionClient();
         const result = await account.get();
-        console.log("result",result);
         const user = await getUserInfo({ userId: result.$id });
-        console.log("user info",user);
         return parseStringify(user);
       } catch (error) {
         
