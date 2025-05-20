@@ -23,7 +23,7 @@ export function useAuth() {
             return await registerUserAction(registerFormData);
         },
         onSuccess: () => {
-            router.push('/dashboard');
+            
         },
         onError: (error) => {
             console.log(error);

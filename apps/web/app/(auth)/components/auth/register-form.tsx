@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import PlaidLink from './PlaidLink';
 import { useAuth } from '@/hooks/useAuth';
 import { RegisterFormDataType, registerSchema } from '@/types/auth';
+import { Models } from 'node-appwrite';
 
 
 export default function RegisterForm() {
@@ -42,7 +43,7 @@ export default function RegisterForm() {
 
   return (
     <>
-      {user ? <PlaidLinkAuth/>:(
+      {user ? <PlaidLinkAuth user={user}/>:(
     <div className="grid gap-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,10 +239,10 @@ export default function RegisterForm() {
 }
 
 
-function PlaidLinkAuth() {
+function PlaidLinkAuth({user}:{user: Models.User<Models.Preferences> | null | undefined}) {
   return (
     <div>
-      <PlaidLink />
+      <PlaidLink user={user}/>
     </div>
   );
 }
