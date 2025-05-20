@@ -18,8 +18,8 @@ export function LogoutDialog() {
           </AlertDialogHeader>
          
             <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Button onClick={()=>logout()}>Logout</Button>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogContent>
       </AlertDialog>

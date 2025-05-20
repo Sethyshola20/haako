@@ -15,7 +15,6 @@ export default async function Layout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <main className="relative flex-1 overflow-hidden bg-background">
-        <SidebarTrigger />
         {children}
       </main>
     </SidebarProvider>

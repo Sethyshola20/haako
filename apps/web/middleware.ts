@@ -13,7 +13,7 @@ export default async function middleware(request: NextRequest) {
     
     if (routePath === "/login"  || routePath === "/" ||
         /^\/forms\/me\/enjeux\/[1-9]$/.test(routePath)
-        || routePath === "/register" || routePath === "/reset-password" || /^\/reset-password(\/[a-zA-Z0-9_-]+)?$/.test(routePath) || routePath === "/") {
+        || routePath === "/register" || routePath === "/dashboard" || /^\/reset-password(\/[a-zA-Z0-9_-]+)?$/.test(routePath) || routePath === "/") {
         return NextResponse.next();
       }
     
