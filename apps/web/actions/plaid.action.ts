@@ -13,9 +13,9 @@ export async function createLinkToken (user:User){
     try {
         const tokenParams = {
             user: {
-                client_user_id: user!.$id,
+                client_user_id: user.$id,
             },
-            client_name: user!.name,
+            client_name: user.firstName + ' ' + user.lastName,
             products: ['auth'] as Products[],
             country_codes: ['US'] as CountryCode[],
             language: 'en'  ,
@@ -26,10 +26,6 @@ export async function createLinkToken (user:User){
         console.log(error);
     }
 }
-type exchangePublicTokenProps = {
-    publicToken: string;
-    user: User
-  };
 
 export const exchangePublicToken = async ({
   publicToken,

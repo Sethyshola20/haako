@@ -15,8 +15,6 @@ import { Input } from '@/components/ui/input';
 import PlaidLink from './PlaidLink';
 import { useAuth } from '@/hooks/useAuth';
 import { RegisterFormDataType, registerSchema } from '@/types/auth';
-import { Models } from 'node-appwrite';
-
 
 export default function RegisterForm() {
   const { register, user } = useAuth()
@@ -31,19 +29,23 @@ export default function RegisterForm() {
       confirmPassword: '',
       city: '',
       country: '',
-      address: '',
+      address1: '',
+      postalCode: '',
+      state: '',
+      ssn: '',
+      dateOfBirth: '',
     },
   });
 
   const { isSubmitting } = form.formState
 
   async function onSubmit(data:RegisterFormDataType ) {
-     return register(data)
+    return register(data)
   }
 
   return (
     <>
-      {user ? <PlaidLinkAuth user={user}/>:(
+    {user ? <PlaidLinkAuth user={user}/>:(
     <div className="grid gap-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -54,7 +56,8 @@ export default function RegisterForm() {
               <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="John" 
                     autoCapitalize="none" 
                     autoCorrect="off"
@@ -73,7 +76,8 @@ export default function RegisterForm() {
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="Doe" 
                     autoCapitalize="none" 
                     autoCorrect="off"
@@ -92,12 +96,33 @@ export default function RegisterForm() {
               <FormItem className="md:col-span-2">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="name@example.com" 
                     type="email" 
                     autoCapitalize="none" 
                     autoComplete="email" 
                     autoCorrect="off"
+                    disabled={isSubmitting}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>Date of birth</FormLabel>
+                <FormControl>
+                  <Input
+                    required 
+                    placeholder="20/06/2000" 
+                    type="text" 
+                    autoCapitalize="none" 
                     disabled={isSubmitting}
                     {...field} 
                   />
@@ -113,7 +138,8 @@ export default function RegisterForm() {
               <FormItem>
                 <FormLabel>City</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="Paris" 
                     autoCapitalize="none" 
                     autoCorrect="off"
@@ -125,34 +151,15 @@ export default function RegisterForm() {
               </FormItem>
             )}
           />
-           <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Country</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="France" 
-                    autoCapitalize="none" 
-                    autoCorrect="off"
-                    disabled={isSubmitting}
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
-            name="address"
+            name="address1"
             render={({ field }) => (
-              <FormItem className="md:col-span-2">
+              <FormItem >
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="123 Main St" 
                     autoCapitalize="none" 
                     autoCorrect="off"
@@ -167,12 +174,76 @@ export default function RegisterForm() {
           />
           <FormField
             control={form.control}
+            name="postalCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Postal Code</FormLabel>
+                <FormControl>
+                  <Input
+                    required
+                    placeholder="75001"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    type='string'
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State</FormLabel>
+                <FormControl>
+                  <Input
+                    required
+                    placeholder="Paris"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    type='string'
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem> 
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="ssn"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>SSN</FormLabel>
+                <FormControl>
+                  <Input
+                    required
+                    placeholder="123-45-6789"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    type='string'
+                    disabled={isSubmitting}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="••••••••" 
                     type="password" 
                     autoCapitalize="none" 
@@ -193,7 +264,8 @@ export default function RegisterForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                    required 
                     placeholder="••••••••" 
                     type="password" 
                     autoCapitalize="none" 
@@ -207,8 +279,6 @@ export default function RegisterForm() {
               </FormItem>
             )}
           />
-          
-          
           <Button type="submit" className="w-full md:col-span-2" disabled={isSubmitting}>
             {isSubmitting ? 'Creating account...' : 'Create account'}
           </Button>
@@ -224,14 +294,14 @@ export default function RegisterForm() {
           </span>
         </div>
       </div>
-      <div className="flex flex-col space-y-2">
+     {/* <div className="flex flex-col space-y-2">
         <Button variant="outline" type="button" disabled={isSubmitting}>
           Continue with Google
         </Button>
         <Button variant="outline" type="button" disabled={isSubmitting}>
           Continue with Apple
         </Button>
-      </div>
+      </div> */}
     </div>
      )}
     </>
@@ -239,7 +309,7 @@ export default function RegisterForm() {
 }
 
 
-function PlaidLinkAuth({user}:{user: Models.User<Models.Preferences> | null | undefined}) {
+function PlaidLinkAuth({user}:{user: User}) {
   return (
     <div>
       <PlaidLink user={user}/>

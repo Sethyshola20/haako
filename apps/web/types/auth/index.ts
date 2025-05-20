@@ -21,7 +21,11 @@ export const registerSchema = loginSchema.extend({
     confirmPassword: z.string(),
     city: z.string(),
     country: z.string(),
-    address: z.string(),
+    address1: z.string(),
+    dateOfBirth: z.string(),
+    state: z.string(),
+    ssn: z.string(),
+    postalCode: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],

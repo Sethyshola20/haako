@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 import { toast } from "sonner"
 import {  getLoggedInUserAction, loginUserAction, logoutUserAction, registerUserAction } from '@/actions/user.action';
 import { LoginFormDataType, RegisterFormDataType } from '@/types/auth';
 
 export function useAuth() {
     const router = useRouter();
+    const queryClient = useQueryClient(); // Get the query client instance
 
     const { data: user, isLoading } = useQuery({
         queryKey: ['user'],
@@ -15,15 +16,15 @@ export function useAuth() {
             return await getLoggedInUserAction();
         },
         retry: false,
-        staleTime: 1000 * 60 * 5, 
+        staleTime: 1000 * 60 * 5,
     });
 
     const { mutate: register } = useMutation({
         mutationFn: async (registerFormData: RegisterFormDataType) => {
             return await registerUserAction(registerFormData);
         },
-        onSuccess: () => {
-            
+        onSuccess: () => { // Add onSuccess callback
+            queryClient.invalidateQueries({ queryKey: ['user'] }); // Invalidate the user query
         },
         onError: (error) => {
             console.log(error);
@@ -63,7 +64,7 @@ export function useAuth() {
         }
     })
 
-   
+
     return {
         register,
         login,

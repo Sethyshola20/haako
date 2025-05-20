@@ -1,26 +1,24 @@
 "use client";
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-import {  getLoggedInUserAction, loginUserAction, logoutUserAction, registerUserAction } from '@/actions/user.action';
+
 import { createLinkToken } from '@/actions/plaid.action';
-import { Models } from 'node-appwrite';
 import { useAuth } from './useAuth';
 
 
 export function usePlaid() {
-    const { user }= useAuth();
+    const { user } = useAuth();
     // Keep the mutation for calling the server action
     const { mutateAsync: fetchLinkToken } = useMutation({
-        mutationFn: async (user:Models.User<Models.Preferences> | null | undefined) => {
+        mutationFn: async (user:User) => {
             // createLinkToken returns a stringified object { linkToken: '...' }
-            return await createLinkToken (user);
+            return await createLinkToken(user);
         },
         onSuccess: () => {
 
         },
         onError: (error:any) => {
             console.log(error);
-
         }
     });
 
@@ -29,7 +27,7 @@ export function usePlaid() {
         queryKey: ['plaidLinkToken', user?.$id], // Unique key for the query
         queryFn: async () => {
             // Call the mutation function to fetch the token
-            const stringifiedData = await fetchLinkToken(user);
+            const stringifiedData = await fetchLinkToken(user!);
             const parsedData = JSON.parse(stringifiedData);
             return parsedData.linkToken as string;
         },
