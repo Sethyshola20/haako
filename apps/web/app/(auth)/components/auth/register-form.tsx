@@ -120,7 +120,7 @@ export default function RegisterForm() {
                 <FormControl>
                   <Input
                     required 
-                    placeholder="20/06/2000" 
+                    placeholder="2000-01-01" 
                     type="text" 
                     autoCapitalize="none" 
                     disabled={isSubmitting}

@@ -21,9 +21,14 @@ export function useAuth() {
 
     const { mutate: register } = useMutation({
         mutationFn: async (registerFormData: RegisterFormDataType) => {
-            return await registerUserAction(registerFormData);
+            const register = await registerUserAction(registerFormData);
+            console.log("register",register);
+            if (!register) {
+                toast("Something went wrong")
+            };
+            return register;
         },
-        onSuccess: () => { // Add onSuccess callback
+        onSuccess: () => { 
             queryClient.invalidateQueries({ queryKey: ['user'] }); // Invalidate the user query
         },
         onError: (error) => {

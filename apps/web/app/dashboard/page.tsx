@@ -4,16 +4,18 @@ import RecentTransactions from './components/RecentTransactions';
 import TotalBalanceBox from './components/TotalBalanceBox';
 import { getAccount, getAccounts } from '../../actions/bank.action';
 import { getLoggedInUserAction } from '../../actions/user.action';
+import { redirect } from 'next/navigation';
 
 export default async function Home({ searchParams: { id, page } }: SearchParamProps) {
   const currentPage = Number(page as string) || 1;
   const loggedIn = await getLoggedInUserAction();
-  const accounts = await getAccounts({ 
+  if(!loggedIn) redirect('/login');
+  
+  const accountsResponse = await getAccounts({ 
     userId: loggedIn.$id 
   })
-
-  if(!accounts) return;
-  
+  if(!accountsResponse.success) return;
+  const accounts = accountsResponse.data
   const accountsData = accounts?.data;
   const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;
 

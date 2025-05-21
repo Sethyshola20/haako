@@ -1,12 +1,13 @@
 "use server"
 
 import { plaidClient } from "@/lib/plaid";
-import { encryptId, parseStringify } from "@/utils";
+import { encryptId,  } from "@/utils";
 import { revalidatePath } from "next/cache";
 import { ID } from "node-appwrite";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
 import { addFundingSource } from "./dwolla.actions";
 import { createAdminClient } from "@/lib/appwrite";
+import { ApiResponse, createErrorResponse, createSuccessResponse, ErrorCodes } from "@/utils/error-handler";
 
 
 export async function createLinkToken (user:User){
@@ -21,7 +22,7 @@ export async function createLinkToken (user:User){
             language: 'en'  ,
         }
        const response= await plaidClient.linkTokenCreate(tokenParams)
-      return parseStringify({ linkToken: response.data.link_token })
+      return ({ linkToken: response.data.link_token })
     } catch (error:unknown) {
         console.log(error);
     }
@@ -30,7 +31,7 @@ export async function createLinkToken (user:User){
 export const exchangePublicToken = async ({
   publicToken,
   user,
-}: exchangePublicTokenProps) => {
+}: exchangePublicTokenProps): Promise<ApiResponse<any>> => {
   try {
     // Exchange public token for access token and item ID
     const response = await plaidClient.itemPublicTokenExchange({
@@ -70,8 +71,10 @@ export const exchangePublicToken = async ({
     console.log("itemId",itemId)
     console.log("processorToken",processorToken)
     console.log("accessToken",accessToken)
-    // If the funding source URL is not created, throw an error
-    if (!fundingSourceUrl) throw Error;
+    // If the funding source URL is not created, throw a specific error
+    if (!fundingSourceUrl) {
+      throw new Error("Failed to create funding source URL");
+    }
 
     // Create a bank account using the user ID, item ID, account ID, access token, funding source URL, and sharable ID
     await createBankAccount({
@@ -87,12 +90,31 @@ export const exchangePublicToken = async ({
     revalidatePath("/dashboard");
 
     // Return a success message
-    return parseStringify({
+    return createSuccessResponse({
       publicTokenExchange: "complete",
     });
-  } catch (error) {
-    // Log any errors that occur during the process
-    console.error("An error occurred while creating exchanging token:", error);
+  } catch (error: any) {
+    console.error("An error occurred while exchanging token:", error);
+    
+    let errorCode = ErrorCodes.PLAID_ERROR;
+    let errorMessage = "Failed to exchange public token";
+    
+    // Determine specific error types
+    if (error.message?.includes("funding source")) {
+      errorCode = ErrorCodes.DWOLLA_ERROR;
+      errorMessage = "Failed to create funding source";
+    } else if (error.response?.data?.error_code) {
+      // Handle specific Plaid API errors
+      const plaidError = error.response.data;
+      errorCode = `PLAID_${plaidError.error_code}`;
+      errorMessage = plaidError.error_message || "Plaid API error";
+    }
+    
+    return createErrorResponse(
+      errorCode,
+      errorMessage,
+      { originalError: error.message }
+    );
   }
 };
 
@@ -127,7 +149,7 @@ export async function createBankAccount({
         sharableId,
       }
     )
-  return parseStringify(bankAccount)
+  return (bankAccount)
   } catch (error:unknown) {
     console.log(error)
   }

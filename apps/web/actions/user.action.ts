@@ -2,7 +2,7 @@
 
 import { createAdminClient, createSessionClient } from '@/lib/appwrite';
 import { LoginFormDataType, loginSchema, RegisterFormDataType } from '@/types/auth';
-import { extractCustomerIdFromUrl, parseStringify } from '@/utils';
+import { extractCustomerIdFromUrl,  } from '@/utils';
 import { cookies } from 'next/headers';
 import {  ID, Query } from 'node-appwrite';
 import { ZodError} from 'zod'
@@ -13,13 +13,13 @@ export async function getLoggedInUserAction() {
         const { account } = await createSessionClient();
         const result = await account.get();
         const user = await getUserInfo({ userId: result.$id });
-        return parseStringify(user);
+        return user;
       } catch (error) {
         return null;
       }
   }
 
-  export async function getUserInfo({ userId }: getUserInfoProps)  {
+  export async function getUserInfo({ userId }: getUserInfoProps):Promise<User | null>  {
     try {
       const { database } = await createAdminClient();
   
@@ -31,7 +31,7 @@ export async function getLoggedInUserAction() {
   
       if (user.total !== 1) return null;
   
-      return parseStringify(user.documents[0]);
+      return (user.documents[0]) as unknown as User;
     } catch (error) {
       console.error("Error", error);
       return null;
@@ -39,7 +39,7 @@ export async function getLoggedInUserAction() {
   };
   
   
-export async function registerUserAction(registerFormData: RegisterFormDataType){
+export async function registerUserAction(registerFormData: RegisterFormDataType):Promise<User | null>{
     let newUserAccount;
   
     try {
@@ -93,16 +93,13 @@ export async function registerUserAction(registerFormData: RegisterFormDataType)
         secure: true,
       });
   
-      return parseStringify(newUser);
+      return newUser as unknown as User; 
     } catch (error) {
       console.error("Error", error);
-  
-      // check if account has been created, if so, delete it
       if (newUserAccount?.$id) {
         const { user } = await createAdminClient();
         await user.delete(newUserAccount?.$id);
       }
-  
       return null;
     }
 }
@@ -121,7 +118,7 @@ export async function loginUserAction(loginFormData: LoginFormDataType){
             secure: true,
         });
         const user = await getUserInfo({ userId: session.userId }) 
-        return parseStringify(user);
+        return (user);
     } catch (error:unknown) {
         if (error instanceof Error) {
             throw new Error(error.message);
@@ -154,7 +151,7 @@ export const getBanks = async ({ userId }: getBanksProps) => {
       [Query.equal('userId', [userId])]
     )
 
-    return parseStringify(banks.documents);
+    return (banks.documents);
   } catch (error) {
     console.log(error)
   }
@@ -170,7 +167,7 @@ export async function getBank({ documentId }: getBankProps) {
       [Query.equal('$id', [documentId])]
     )
 
-    return parseStringify(bank.documents[0]);
+    return (bank.documents[0]);
   } catch (error) {
     console.log(error)
   }
@@ -188,7 +185,7 @@ export async function getBankByAccountId({ accountId }: getBankByAccountIdProps)
 
     if(bank.total !== 1) return null;
 
-    return parseStringify(bank.documents[0]);
+    return (bank.documents[0]);
   } catch (error) {
     console.log(error)
   }
