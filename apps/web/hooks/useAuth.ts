@@ -10,7 +10,7 @@ export function useAuth() {
     const router = useRouter();
     const queryClient = useQueryClient(); // Get the query client instance
 
-    const { data: user, isLoading } = useQuery({
+    const { data: user, isLoading,error } = useQuery({
         queryKey: ['user'],
         queryFn: async () => {
             return await getLoggedInUserAction();
@@ -71,5 +71,6 @@ export function useAuth() {
         logout,
         user,
         isLoading,
+        error
     };
 }

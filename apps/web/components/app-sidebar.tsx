@@ -24,8 +24,8 @@ const items = [
   },
 
   {
-    title: "Analysis",
-    url: "/dashboard/ml-analysis",
+    title: "My banks",
+    url: "/dashboard/my-banks",
     icon: Computer,
   },
 

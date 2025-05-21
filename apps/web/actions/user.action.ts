@@ -1,11 +1,10 @@
 "use server"
 
 import { createAdminClient, createSessionClient } from '@/lib/appwrite';
-//import { SuccessfulRegistration } from '@/types/api';
-import { LoginFormDataType, loginSchema, RegisterFormDataType, registerSchema } from '@/types/auth';
+import { LoginFormDataType, loginSchema, RegisterFormDataType } from '@/types/auth';
 import { extractCustomerIdFromUrl, parseStringify } from '@/utils';
 import { cookies } from 'next/headers';
-import { AppwriteException, ID, Query } from 'node-appwrite';
+import {  ID, Query } from 'node-appwrite';
 import { ZodError} from 'zod'
 import { createDwollaCustomer } from './dwolla.actions';
 
@@ -16,7 +15,6 @@ export async function getLoggedInUserAction() {
         const user = await getUserInfo({ userId: result.$id });
         return parseStringify(user);
       } catch (error) {
-        
         return null;
       }
   }
@@ -122,7 +120,8 @@ export async function loginUserAction(loginFormData: LoginFormDataType){
             sameSite: "strict",
             secure: true,
         });
-        return parseStringify(session);
+        const user = await getUserInfo({ userId: session.userId }) 
+        return parseStringify(user);
     } catch (error:unknown) {
         if (error instanceof Error) {
             throw new Error(error.message);
@@ -145,7 +144,52 @@ export async function logoutUserAction(){
         }
     }
 }
-export async function updateUserAction(){}
-export async function deleteUserAction(){}
+export const getBanks = async ({ userId }: getBanksProps) => {
+  try {
+    const { database } = await createAdminClient();
 
+    const banks = await database.listDocuments(
+      process.env.DATABASE_ID!,
+      process.env.BANK_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    )
 
+    return parseStringify(banks.documents);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function getBank({ documentId }: getBankProps) {
+  try {
+    const { database } = await createAdminClient();
+
+    const bank = await database.listDocuments(
+      process.env.DATABASE_ID!,
+      process.env.BANK_COLLECTION_ID!,
+      [Query.equal('$id', [documentId])]
+    )
+
+    return parseStringify(bank.documents[0]);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function getBankByAccountId({ accountId }: getBankByAccountIdProps) {
+  try {
+    const { database } = await createAdminClient();
+
+    const bank = await database.listDocuments(
+      process.env.DATABASE_ID!,
+      process.env.BANK_COLLECTION_ID!,
+      [Query.equal('accountId', [accountId])]
+    )
+
+    if(bank.total !== 1) return null;
+
+    return parseStringify(bank.documents[0]);
+  } catch (error) {
+    console.log(error)
+  }
+}

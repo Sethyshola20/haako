@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-
 import { createLinkToken } from '@/actions/plaid.action';
 import { useAuth } from './useAuth';
 
