@@ -53,13 +53,13 @@ export async function registerUserAction(registerFormData: RegisterFormDataType)
   
       if (!newUserAccount) throw new Error("Error creating user");
   
-      const dwollaCustomerUrl = await createDwollaCustomer({
+      const dwollaCustomerURL = await createDwollaCustomer({
         ...registerFormData,
         type: "personal",
       });
   
-      if (!dwollaCustomerUrl) throw new Error("Error creating dwolla customer");
-      const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+      if (!dwollaCustomerURL) throw new Error("Error creating dwolla customer");
+      const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerURL);
   
       const newUser = await database.createDocument(
         process.env.APPWRITE_DATABASE_ID!,
@@ -76,7 +76,7 @@ export async function registerUserAction(registerFormData: RegisterFormDataType)
           dateOfBirth: registerFormData.dateOfBirth,
           ssn: registerFormData.ssn,
           userId: newUserAccount.$id,
-          dwollaCustomerURL: dwollaCustomerUrl,
+          dwollaCustomerURL,
           dwollaCustomerId,
         }
       );
@@ -132,7 +132,6 @@ export async function loginUserAction(loginFormData: LoginFormDataType){
 export async function logoutUserAction(){
     try {
         const { account } = await createSessionClient();
-        console.log("account",account);
         await account.deleteSession("current");
         (await cookies()).delete("session");
     } catch (error:unknown) {
@@ -146,8 +145,8 @@ export const getBanks = async ({ userId }: getBanksProps) => {
     const { database } = await createAdminClient();
 
     const banks = await database.listDocuments(
-      process.env.DATABASE_ID!,
-      process.env.BANK_COLLECTION_ID!,
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_BANK_COLLECTION!,
       [Query.equal('userId', [userId])]
     )
 
@@ -162,8 +161,8 @@ export async function getBank({ documentId }: getBankProps) {
     const { database } = await createAdminClient();
 
     const bank = await database.listDocuments(
-      process.env.DATABASE_ID!,
-      process.env.BANK_COLLECTION_ID!,
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_BANK_COLLECTION!,
       [Query.equal('$id', [documentId])]
     )
 
@@ -178,8 +177,8 @@ export async function getBankByAccountId({ accountId }: getBankByAccountIdProps)
     const { database } = await createAdminClient();
 
     const bank = await database.listDocuments(
-      process.env.DATABASE_ID!,
-      process.env.BANK_COLLECTION_ID!,
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_BANK_COLLECTION!,
       [Query.equal('accountId', [accountId])]
     )
 

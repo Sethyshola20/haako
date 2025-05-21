@@ -18,7 +18,7 @@ export async function createLinkToken (user:User){
             },
             client_name: user.firstName + ' ' + user.lastName,
             products: ['auth'] as Products[],
-            country_codes: ['US','FR'] as CountryCode[],
+            country_codes: ['US'] as CountryCode[],
             language: 'en'  ,
         }
        const response= await plaidClient.linkTokenCreate(tokenParams)
@@ -33,11 +33,10 @@ export const exchangePublicToken = async ({
   user,
 }: exchangePublicTokenProps): Promise<ApiResponse<any>> => {
   try {
-    // Exchange public token for access token and item ID
     const response = await plaidClient.itemPublicTokenExchange({
       public_token: publicToken,
     });
-
+    
     const accessToken = response.data.access_token;
     const itemId = response.data.item_id;
 
@@ -55,37 +54,32 @@ export const exchangePublicToken = async ({
       processor: "dwolla" as ProcessorTokenCreateRequestProcessorEnum,
     };
 
-    const processorTokenResponse =
-      await plaidClient.processorTokenCreate(request);
+    const processorTokenResponse = await plaidClient.processorTokenCreate(request);
+    console.log("processorTokenResponse",processorTokenResponse)
     const processorToken = processorTokenResponse.data.processor_token;
     
+    console.log("PROCSSORTOKENRESPONSE",processorToken)
     // Create a funding source URL for the account using the Dwolla customer ID, processor token, and bank name
     const fundingSourceUrl = await addFundingSource({
       dwollaCustomerId:user.dwollaCustomerId,
       processorToken,
       bankName: accountData.name,
     });
-    console.log("fundingSourceUrl",fundingSourceUrl)
-    console.log("user",user)
-    console.log("accountData",accountData)
-    console.log("itemId",itemId)
-    console.log("processorToken",processorToken)
-    console.log("accessToken",accessToken)
     // If the funding source URL is not created, throw a specific error
     if (!fundingSourceUrl) {
       throw new Error("Failed to create funding source URL");
     }
 
     // Create a bank account using the user ID, item ID, account ID, access token, funding source URL, and sharable ID
-    await createBankAccount({
+   const creating = await createBankAccount({
       userId: user.$id,
       bankId: itemId,
       accountId: accountData.account_id,
       accessToken,
       fundingSourceUrl,
-      sharableId: encryptId(accountData.account_id),
+      shareableId: encryptId(accountData.account_id),
     });
-
+    console.log("creating",creating)
     // Revalidate the path to reflect the changes
     revalidatePath("/dashboard");
 
@@ -124,21 +118,21 @@ export async function createBankAccount({
     accountId,
     accessToken,
     fundingSourceUrl,
-    sharableId,
+    shareableId,
   }: {
     userId: string;
     bankId: string;
     accountId: string;
     accessToken: string;
     fundingSourceUrl: string;
-    sharableId: string;
+    shareableId: string;
   }
 ){
   try {
     const { database } = await createAdminClient();
     const bankAccount = await database.createDocument(
-      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_APPWRITE_BANK_ACCOUNTS_COLLECTION_ID!,
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_BANK_COLLECTION!,
       ID.unique(),
       {
         userId,
@@ -146,7 +140,7 @@ export async function createBankAccount({
         accountId,
         accessToken,
         fundingSourceUrl,
-        sharableId,
+        shareableId,
       }
     )
   return (bankAccount)

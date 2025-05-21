@@ -99,7 +99,7 @@ export const addFundingSource = async ({
   try {
     // create dwolla auth link
     const dwollaAuthLinks = await createOnDemandAuthorization();
-
+    console.log("dwollaAuthLinks: ", dwollaAuthLinks);
     // add funding source to the dwolla customer & get the funding source url
     const fundingSourceOptions = {
       customerId: dwollaCustomerId,
@@ -107,6 +107,7 @@ export const addFundingSource = async ({
       plaidToken: processorToken,
       _links: dwollaAuthLinks,
     };
+    console.log("fundingSourceOptions: ", fundingSourceOptions);
     return await createFundingSource(fundingSourceOptions);
   } catch (err) {
     console.error("Transfer fund failed: ", err);

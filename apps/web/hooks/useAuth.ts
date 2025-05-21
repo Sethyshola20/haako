@@ -22,7 +22,6 @@ export function useAuth() {
     const { mutate: register } = useMutation({
         mutationFn: async (registerFormData: RegisterFormDataType) => {
             const register = await registerUserAction(registerFormData);
-            console.log("register",register);
             if (!register) {
                 toast("Something went wrong")
             };

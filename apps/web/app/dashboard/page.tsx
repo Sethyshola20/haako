@@ -6,7 +6,17 @@ import { getAccount, getAccounts } from '../../actions/bank.action';
 import { getLoggedInUserAction } from '../../actions/user.action';
 import { redirect } from 'next/navigation';
 
-export default async function Home({ searchParams: { id, page } }: SearchParamProps) {
+interface SearchParamProps {
+  id?: string;
+  page?: string;
+}
+
+export default async function Home({ 
+  searchParams 
+}: { 
+  searchParams: Promise<SearchParamProps> 
+})  {
+  const { page, id } = await searchParams;
   const currentPage = Number(page as string) || 1;
   const loggedIn = await getLoggedInUserAction();
   if(!loggedIn) redirect('/login');
@@ -22,9 +32,9 @@ export default async function Home({ searchParams: { id, page } }: SearchParamPr
   const account = await getAccount({ appwriteItemId })
 
   return (
-    <section className="home">
-      <div className="home-content">
-        <header className="home-header">
+    <section className="max-w-7xl mx-auto px-4 py-6">
+      <div className="grid gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           <HeaderBox 
             type="greeting"
             title="Welcome"
@@ -37,11 +47,11 @@ export default async function Home({ searchParams: { id, page } }: SearchParamPr
             totalBanks={accounts?.totalBanks}
             totalCurrentBalance={accounts?.totalCurrentBalance}
           />
-        </header>
+        </div>
 
         <RecentTransactions 
           accounts={accountsData}
-          transactions={account?.transactions}
+          transactions={account?.success ? account.data.transactions : []}
           appwriteItemId={appwriteItemId}
           page={currentPage}
         />

@@ -22,7 +22,7 @@ export async function getAccounts({ userId }: getAccountsProps): Promise<ApiResp
   try {
     // get banks from db
     const banks = await getBanks({ userId }) as unknown as Bank[];
-    
+
     if (!banks || banks.length === 0) {
       return createSuccessResponse({ 
         data: [], 
@@ -48,18 +48,18 @@ export async function getAccounts({ userId }: getAccountsProps): Promise<ApiResp
           throw new Error("Institution not found");
         }
 
-        const account = {
+        const account:Account = {
           id: accountData.account_id,
           availableBalance: accountData.balances.available!,
           currentBalance: accountData.balances.current!,
           institutionId: institution.institution_id,
           name: accountData.name,
-          officialName: accountData.official_name || undefined, // Convert null to undefined
+          officialName: accountData.official_name ?? "", // Convert null to undefined
           mask: accountData.mask!,
           type: accountData.type as string,
           subtype: accountData.subtype! as string,
           appwriteItemId: bank.$id,
-          sharaebleId: bank.shareableId,
+          shareableId: bank.shareableId,
         };
 
         return account;
@@ -102,7 +102,6 @@ export async function getAccounts({ userId }: getAccountsProps): Promise<ApiResp
 // Get one bank account
 export async function getAccount({ appwriteItemId }: getAccountProps): Promise<ApiResponse<SingleAccountResponse>> {
   try {
-    // get bank from db
     const bank = await getBank({ documentId: appwriteItemId }) as unknown as Bank;
 
     if(!bank) {
@@ -178,17 +177,18 @@ export async function getAccount({ appwriteItemId }: getAccountProps): Promise<A
       );
     }
 
-    const account = {
+    const account:Account = {
       id: accountData.account_id,
       availableBalance: accountData.balances.available!,
       currentBalance: accountData.balances.current!,
       institutionId: institution.institution_id,
       name: accountData.name,
-      officialName: accountData.official_name || undefined, // Convert null to undefined
+      officialName: accountData.official_name??"", 
       mask: accountData.mask!,
       type: accountData.type as string,
       subtype: accountData.subtype! as string,
       appwriteItemId: bank.$id,
+      shareableId: bank.shareableId,
     };
 
     // sort transactions by date such that the most recent transaction is first

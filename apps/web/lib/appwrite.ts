@@ -23,7 +23,6 @@ export async function createSessionClient() {
 }
 
 export async function createAdminClient() {
-  console.log("client",(process.env.APPWRITE_ENDPOINT));
   const client = new Client()
     .setEndpoint(process.env.APPWRITE_ENDPOINT!)
     .setProject(process.env.APPWRITE_PROJECT_ID!)
