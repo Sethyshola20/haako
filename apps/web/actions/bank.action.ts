@@ -117,7 +117,7 @@ export async function getAccount({ appwriteItemId }: getAccountProps): Promise<A
       access_token: bank.accessToken,
     });
     const accountData = accountsResponse.data.accounts[0];
-
+    
     // get transfer transactions from appwrite
     const transferTransactionsData = await getTransactionsByBankId({
       bankId: bank.$id,
@@ -166,7 +166,7 @@ export async function getAccount({ appwriteItemId }: getAccountProps): Promise<A
     }
 
     const transactions = await getTransactions({
-      accessToken: bank?.accessToken,
+      accessToken: bank.accessToken,
     });
     
     if (!transactions) {
@@ -249,9 +249,12 @@ export async function getTransactions({ accessToken }: getTransactionsProps): Pr
     // Iterate through each page of new transaction updates for item
     while (hasMore) {
       const response = await plaidClient.transactionsSync({
+        count: 100,
+        options:{
+          include_personal_finance_category: true
+        },
         access_token: accessToken,
       });
-
       const data = response.data;
 
       transactions = response.data.added.map((transaction) => ({
@@ -273,6 +276,10 @@ export async function getTransactions({ accessToken }: getTransactionsProps): Pr
     return transactions;
   } catch (error: any) {
     console.error("An error occurred while getting the transactions:", error);
-    return null;
+    return createErrorResponse(
+      ErrorCodes.PLAID_ERROR,
+      "Failed to retrieve transactions",
+      { originalError: error.message }
+    );
   }
 }

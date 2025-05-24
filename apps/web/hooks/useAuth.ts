@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 import { toast } from "sonner"
-import {  getLoggedInUserAction, loginUserAction, logoutUserAction, registerUserAction } from '@/actions/user.action';
-import { LoginFormDataType, RegisterFormDataType } from '@/types/auth';
+import {  getLoggedInUserAction, loginUserAction, logoutUserAction, registerUserAction, updateUserAction } from '@/actions/user.action';
+import { LoginFormDataType, RegisterFormDataType, UpdateUserFormDataType } from '@/types/auth';
 
 export function useAuth() {
     const router = useRouter();
@@ -23,7 +23,7 @@ export function useAuth() {
         mutationFn: async (registerFormData: RegisterFormDataType) => {
             const register = await registerUserAction(registerFormData);
             if (!register) {
-                toast("Something went wrong")
+                toast.error("Something went wrong")
             };
             return register;
         },
@@ -32,7 +32,7 @@ export function useAuth() {
         },
         onError: (error) => {
             console.log(error);
-            toast("Something went wrong",{
+            toast.error("Something went wrong",{
                 description: error.message,
             })
         }
@@ -47,7 +47,7 @@ export function useAuth() {
         },
         onError: (error) => {
             console.log(error);
-            toast("Something went wrong",{
+            toast.error("Something went wrong",{
                 description: error.message,
             })
         }
@@ -62,7 +62,22 @@ export function useAuth() {
         },
         onError: (error) => {
             console.log(error);
-            toast("Something went wrong",{
+            toast.error("Something went wrong",{
+                description: error.message,
+            })
+        }
+    })
+
+    const {mutate: updateUser} = useMutation({
+        mutationFn: async (data: UpdateUserFormDataType) => {
+            return await updateUserAction(data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['user'] }); // Invalidate the user query
+        },
+        onError: (error) => {
+            console.log(error);
+            toast.error("Something went wrong",{
                 description: error.message,
             })
         }
@@ -73,8 +88,10 @@ export function useAuth() {
         register,
         login,
         logout,
+        updateUser,
         user,
         isLoading,
-        error
+        error,
+        
     };
 }

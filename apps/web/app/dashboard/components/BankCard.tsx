@@ -2,8 +2,9 @@ import { formatAmount } from '@/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import Copy from './Copy'
 
-export default async function ({ account, userName, showBalance = true }: CreditCardProps)  {
+const BankCard = ({ account, userName, showBalance = true }: CreditCardProps) => {
 
   console.log(account);
   return (
@@ -59,8 +60,9 @@ export default async function ({ account, userName, showBalance = true }: Credit
         />
       </Link>
 
-      {/*showBalance && <Copy title={account?.sharaebleId} />*/}
+      {showBalance && <Copy title={account?.shareableId} />}
     </div>
   )
 }
 
+export default BankCard

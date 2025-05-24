@@ -7,7 +7,7 @@ import { TransactionsResponse } from "@/types/api";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
-  APPWRITE_TRANSACTION_COLLECTION_ID: TRANSACTION_COLLECTION_ID,
+  APPWRITE_TRANSACTION_COLLECTION: TRANSACTION_COLLECTION_ID,
 } = process.env;
 
 export const createTransaction = async (
@@ -56,13 +56,11 @@ export const getTransactionsByBankId = async ({
 }: getTransactionsByBankIdProps): Promise<ApiResponse<TransactionsResponse>>=> {
   try {
     const { database } = await createAdminClient();
-
     const senderTransactions = await database.listDocuments(
       DATABASE_ID!,
       TRANSACTION_COLLECTION_ID!,
       [Query.equal('senderBankId', bankId)],
     );
-
     const receiverTransactions = await database.listDocuments(
       DATABASE_ID!,
       TRANSACTION_COLLECTION_ID!,

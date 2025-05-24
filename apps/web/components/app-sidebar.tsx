@@ -28,6 +28,11 @@ const items = [
     url: "/dashboard/my-banks",
     icon: Computer,
   },
+  {
+    title: "My transactions",
+    url: "/dashboard/transaction-history",
+    icon: Computer,
+  },
 
   {
     title: "Settings",

@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Input, PasswordInput } from '@/components/ui/input';
 import PlaidLink from './PlaidLink';
 import { useAuth } from '@/hooks/useAuth';
 import { RegisterFormDataType, registerSchema } from '@/types/auth';
@@ -242,14 +242,8 @@ export default function RegisterForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    required 
+                   <PasswordInput 
                     placeholder="••••••••" 
-                    type="password" 
-                    autoCapitalize="none" 
-                    autoComplete="new-password" 
-                    autoCorrect="off"
-                    disabled={isSubmitting}
                     {...field} 
                   />
                 </FormControl>
@@ -264,14 +258,8 @@ export default function RegisterForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input
-                    required 
+                   <PasswordInput 
                     placeholder="••••••••" 
-                    type="password" 
-                    autoCapitalize="none" 
-                    autoComplete="new-password" 
-                    autoCorrect="off"
-                    disabled={isSubmitting}
                     {...field} 
                   />
                 </FormControl>

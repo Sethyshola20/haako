@@ -1,7 +1,7 @@
 "use server"
 
 import { createAdminClient, createSessionClient } from '@/lib/appwrite';
-import { LoginFormDataType, loginSchema, RegisterFormDataType } from '@/types/auth';
+import { LoginFormDataType, loginSchema, RegisterFormDataType, UpdateUserFormDataType } from '@/types/auth';
 import { extractCustomerIdFromUrl,  } from '@/utils';
 import { cookies } from 'next/headers';
 import {  ID, Query } from 'node-appwrite';
@@ -19,24 +19,52 @@ export async function getLoggedInUserAction() {
       }
   }
 
-  export async function getUserInfo({ userId }: getUserInfoProps):Promise<User | null>  {
+export async function getUserInfo({ userId }: getUserInfoProps):Promise<User | null>  {
+  try {
+    const { database } = await createAdminClient();
+
+    const user = await database.listDocuments(
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env. APPWRITE_USER_COLLECTION!,
+      [Query.equal("userId", [userId])]
+    );
+
+    if (user.total !== 1) return null;
+
+    return (user.documents[0]) as unknown as User;
+  } catch (error) {
+    console.error("Error", error);
+    return null;
+  }
+};
+
+export async function updateUserAction(data: UpdateUserFormDataType){
     try {
-      const { database } = await createAdminClient();
-  
-      const user = await database.listDocuments(
-        process.env.APPWRITE_DATABASE_ID!,
-        process.env. APPWRITE_USER_COLLECTION!,
-        [Query.equal("userId", [userId])]
-      );
-  
-      if (user.total !== 1) return null;
-  
-      return (user.documents[0]) as unknown as User;
-    } catch (error) {
-      console.error("Error", error);
-      return null;
+        const { database } = await createAdminClient();
+        const { account } = await createSessionClient();
+        const result = await account.get();
+        if(!result.$id) return null;
+        const user = await database.updateDocument(
+            process.env.APPWRITE_DATABASE_ID!,
+            process.env.APPWRITE_USER_COLLECTION!,
+            result.$id,
+            {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                address1: data.address1,
+                city: data.city,
+                state: data.state,
+                postalCode: data.postalCode,
+                dateOfBirth: data.dateOfBirth,
+                ssn: data.ssn,
+            }
+        )
+        return user;
+    }catch (error) {
+        console.error("Error", error);
+        return null;
     }
-  };
+}
   
   
 export async function registerUserAction(registerFormData: RegisterFormDataType):Promise<User | null>{

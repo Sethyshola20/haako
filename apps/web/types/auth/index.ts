@@ -30,5 +30,21 @@ export const registerSchema = loginSchema.extend({
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
+
+export const updateUserSchema = z.object({
+    firstName: z.string().min(3, {message: 'Name must be at least 3 characters'}),
+    lastName: z.string().min(3, {message: 'Name must be at least 3 characters'}),
+    email: z.string().email({message: 'Invalid email address'}),
+    confirmPassword: z.string(),
+    city: z.string(),
+    country: z.string(),
+    address1: z.string(),
+    dateOfBirth: z.string(),
+    state: z.string(),
+    ssn: z.string(),
+    postalCode: z.string(),
+})
+
+export type UpdateUserFormDataType = z.infer<typeof updateUserSchema>
 export type LoginFormDataType = z.infer<typeof loginSchema>
 export type RegisterFormDataType = z.infer<typeof registerSchema>

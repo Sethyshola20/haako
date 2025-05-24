@@ -12,7 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Input, PasswordInput } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginFormDataType, loginSchema } from '@/types/auth';
 
@@ -66,13 +66,8 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input 
+                  <PasswordInput 
                     placeholder="••••••••" 
-                    type="password" 
-                    autoCapitalize="none" 
-                    autoComplete="current-password" 
-                    autoCorrect="off"
-                    disabled={isSubmitting}
                     {...field} 
                   />
                 </FormControl>

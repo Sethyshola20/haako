@@ -21,22 +21,23 @@ export default function PlaidLink({ user }:{ user: User }) {
     router.push('/dashboard')
   },[user])
   
-  const config: PlaidLinkOptions = {
-      onSuccess,
-      token: token as string,
-    };
-
-  const { open, ready } = usePlaidLink(config)
+  
   if(isLoading){
     return(
-    <Button variant="default" disabled={!ready} onClick={()=>open()} className='w-full cursor-pointer' type='button'>
-      Link your bank account<Loader2/>
-    </Button>
-  )
+      <Button variant="default" disabled={true} onClick={()=>open()} className='w-full cursor-pointer' type='button'>
+        Link your bank account<Loader2/>
+      </Button>
+    )
   
-  }else if(error){
-    return <div>Error: {error.message}</div>
+  }else if(error || !token){
+    return <div>Error: {}</div>
   }
+  const config: PlaidLinkOptions = {
+    onSuccess,
+    token,
+  };
+
+  const { open, ready } = usePlaidLink(config)
   return (
     <Button variant="default" disabled={!ready} onClick={()=>open()} className='w-full cursor-pointer' type='button'>
       Link your bank account

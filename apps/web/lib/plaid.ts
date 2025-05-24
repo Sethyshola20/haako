@@ -7,6 +7,7 @@ const configuration = new Configuration({
       'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
       'PLAID-SECRET': process.env.PLAID_SECRET,
     },
+    
   },
 })
 

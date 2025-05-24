@@ -17,11 +17,11 @@ export async function createLinkToken (user:User){
                 client_user_id: user.$id,
             },
             client_name: user.firstName + ' ' + user.lastName,
-            products: ['auth'] as Products[],
+            products: ['auth','transactions'] as Products[],
             country_codes: ['US'] as CountryCode[],
             language: 'en'  ,
         }
-       const response= await plaidClient.linkTokenCreate(tokenParams)
+       const response = await plaidClient.linkTokenCreate(tokenParams)
       return ({ linkToken: response.data.link_token })
     } catch (error:unknown) {
         console.log(error);
